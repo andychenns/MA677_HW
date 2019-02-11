@@ -1,0 +1,197 @@
+---
+title: "hw1_LonghaoChen"
+author: "Longhao"
+date: "2/9/2019"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+7 A die is rolled until the first time T that a six turns up. 
+
+(a) What is the probability distribution for T ?
+
+Geometric distribution
+
+(b) Find P (T > 3).
+In order to find P(T > 3), we need to sum all the discrete probability for T = 4, 5, 6 etc. This involes a lot of calculation. Instead we can find the complement of T > 3, which is T=1 and T=2.
+
+$$P(T > 3) = 1 - P(T <= 2)$$
+$$P(T>3)=1- (1/6 + 5/6*1/6)$$
+$$P(T>3)=0.694$$
+(c) Find P (T > 6|T > 3).
+$$P(T>6|T>3)=\frac{P(T>6)\cap P(T>3)}{P(T>3)}$$
+
+$$P(T>6|T>3)=\frac{P(T>6)}{P(T>3)}$$
+Like the method we used in (b), we can calculate the probability for denominator and numerator individually.
+$$P(T>6|T>3)=\frac{0.402}{0.694}$$
+
+10 A census in the United States is an attempt to count everyone in the country. It is inevitable that many people are not counted. The U. S. Census Bureau proposed a way to estimate the number of people who were not counted by the latest census. Their proposal was as follows: In a given locality, let N denote the actual number of people who live there. Assume that the census counted n1 people living in this area. Now, another census was taken in the locality, and n2 people were counted. In addition, n12 people were counted both times.
+(a) Given N, n1, and n2, let X denote the number of people counted both times. Find the probability that X = k, where k is a fixed positive integer between 0 and n2.
+
+This is a hyper-geometric distribution
+So $$P(X=k) = \frac {\binom{n_2}{k}\binom{N-n_2}{n_1-k}}{\binom{N}{n_2}}$$
+
+(b) Now assume that X = n12. Find the value of N which maximizes the expression in part (a). Hint: Consider the ratio of the expressions for successive values of N.
+
+Fixing $k =n_{12}$, the maximum of N happens at $N=\frac {n_1n_2}{n_{12}}$
+
+16 Assume that, during each second, a Dartmouth switchboard receives one call with probability .01 and no calls with probability .99. Use the Poisson approximation to estimate the probability that the operator will miss at most one call if she takes a 5-minute coffee break.
+
+
+The probability of missing at most one call is composed of two parts. The probability of missing 0 call plus the probability of missing 1 call. 
+
+In this problem, lambda can be calculated as 0.01*300= 3 (miss / 5 minutes)
+
+```{r}
+# Manual calculation
+# Set e and lambda
+e <- exp(1)
+lda <- 0.01 * 300
+# Chance of zero calls
+c0 <- ((lda^0)*(e^-3)) / factorial(0)
+# Chance of one call
+c1 <- ((lda^1)*(e^-3)) / factorial(1)
+# Add the two together
+c0 + c1
+```
+
+
+
+18 A baker blends 600 raisins and 400 chocolate chips into a dough mix and, from this, makes 500 cookies.
+
+(a) Find the probability that a randomly picked cookie will have no raisins.
+
+On average there will be 1.2 raisins for each cookie
+so
+```{r}
+# Lambda
+lda <-1.2
+c0 <- exp(-lda)
+c0
+```
+
+
+(b) Find the probability that a randomly picked cookie will have exactly two chocolate chips.
+
+```{r}
+lda <- 400/500
+k <- 2
+c0 <- lda^k/factorial(k)*exp(-lda)
+c0
+```
+
+(c) Find the probability that a randomly chosen cookie will have at least two bits (raisins or chips) in it.
+
+P (X >= 2) = 1 - P(X<=1) = 1 - Fx(1)
+p=1/500 n=1000
+
+```{r}
+1- ppois(1, lambda = 2)
+```
+
+
+25 Reese Prosser never puts money in a 10-cent parking meter in Hanover. He assumes that there is a probability of .05 that he will be caught. The first offense costs nothing, the second costs 2 dollars, and subsequent offenses cost 5 dollars each. Under his assumptions, how does the expected cost of parking 100 times without paying the meter compare with the cost of paying the meter each time?
+
+The lambda = 100*0.05 = 5
+
+Paying the meter each time is 10*100=10dollars
+No paying estimated cost can be calculated by poisson distribution
+
+```{r}
+a1 <- 2 * dpois(1, lambda=5)
+b<-0
+for (i in 2:100) {
+  b1<-(2+5*(i-2))*dpois(i,lambda=5)
+  b <-b+b1
+  b
+}
+b
+total <- a1 +b
+total
+
+```
+
+
+27 Assume that the probability that there is a significant accident in a nuclear power plant during one year’s time is .001. If a country has 100 nuclear plants, estimate the probability that there is at least one such accident during a given year.
+
+```{r}
+lambda <- 0.001 *100
+p <- 1- dpois(0, lambda = lambda)
+p
+```
+
+
+28 An airline finds that 4 percent of the passengers that make reservations on a particular flight will not show up. Consequently, their policy is to sell 100 reserved seats on a plane that has only 98 seats. Find the probability that every person who shows up for the flight will find a seat available.
+
+The probability of not showing up is 4%. And lambda equals 4% time 100 passengers. We want to find out probability of P(x>2)=1-P(x=0)-P(X=1)
+
+```{r}
+lambda <- 0.04*100
+p<- 1 - dpois(0, lambda)-dpois(1,lambda)
+p
+```
+
+
+38 A manufactured lot of buggy whips has 20 items, of which 5 are defective. A random sample of 5 items is chosen to be inspected. Find the probability that the sample contains exactly one defective item
+
+(a) if the sampling is done with replacement. 
+
+Since this process is done with replacement, it can be calculated as binomial distribution such that 
+
+
+```{r}
+p = 5*(5/20)*(15/20)^4
+p
+```
+
+(b) if the sampling is done without replacement.
+Since this process is done without replacement, hypergeometric distribution should be adopted
+and p is calculated as following
+
+```{r}
+q <- dhyper(x=1, m=5, n=15, k=5, log = FALSE)
+q
+```
+
+Section 5.2
+
+1 Choose a number U from the unit interval [0,1] with uniform distribution. Find the cumulative distribution and density for the random variables
+(a) Y = U + 2. 
+
+Since U is from uniform distribution, Y follows a uniform distribution as well. So f(x)=1 from 2 to 3. 
+F(x) can be calculated by taking the integral of f(x)= 1, and F(x)=x-2 from 2 to 3
+
+(b) Y =U3.
+Since we multiple 3 by U f(x) will follow 1/3*x ^(1/3-1), so f(x)=1/3*x^-2/3
+Take integral of this we will have F(x)=x^1/3 from 0 to 1
+
+17 Let X be a random variable with cumulative distribution function
+ 0,
+F(x) = sin^2(πx/2),
+1,
+
+(a) What is the density function fX for X?
+
+The density function f(x) can be found by taking derivative of the F(x)
+using chain rule we can set u=sin(0.5*pi*x) so f(x)=2*u*cos(pi*x/2)pi/2
+Sinplify the equation we have 
+f(x)=pi/2*sin(pi*x) from 0 to 1
+
+(b) What is the probability that X < 1/4?
+
+Substitude x = 0.25 into the cmf we can find out F(x) = sin^2(pi*x/8)=0.146
+
+21 Let X be a random variable with cumulative distribution function F strictly increasing on the range of X . Let Y = F (X ). Show that Y is uniformly distributed in the interval [0, 1]. (The formula X = F −1 (Y ) then tells us how to construct X from a uniform random variable Y .)
+
+$$P(Y ≤ y) = P(F(X) ≤ y) = P(X ≤ F^−1(y)) = F(F^−1(y)) = y\  on\ [0, 1]$$
+
+37 Let X be a random variable having a normal density and consider the random variable Y = eX . Then Y has a log normal density. Find this density of Y .
+
+I don't know how to do this problem.
+
+

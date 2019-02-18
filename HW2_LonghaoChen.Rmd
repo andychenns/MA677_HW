@@ -1,0 +1,88 @@
+---
+title: "HW3_LonghaoChen"
+author: "Longhao"
+date: "2/14/2019"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1. Suppose that one letter is to be selected at random from the 42 letters in the sentence,
+”The shortest distance between two points is a taxi.” If Y denotes the number of letters
+in the word in which the selected letter appears, what is the value of E(Y)?
+
+Y can be c(1, 2, 3, 4, 6, 7, 8) with corresponding probability of (1/9, 1/9,2/9,1/9,1/9,1/9,2/9)
+So 
+
+```{r}
+E=1*1/9+2*1/9+3*2/9+4*1/9+6*1/9+7*1/9+8*2/9
+E
+```
+
+
+2. Suppose that X and Y have a continuous joint distribution for which the joint ppf is:
+f(x, y) = 12y^2 for 0 ≤ y ≤ x ≤ 1
+Find the value of E(XY).
+
+$$E(XY)=\int_{0}^{1}\int_{0}^{x} xyf(x,y) dydx =\int_{0}^{1}\int_{0}^{x}12xy3 dydx =\int_{0}^{1} 4xy4 |x0 dx =\int_{0}^{1} 4x5 dx =(4x6/6)|10 =2/3 =0.6667$$
+
+3. Suppose that three random variables X1, X2, X3 form a random sample from the uniform distribution on the interval [0, 1]. Find E[(X1 − 2X2 + X3)^2].
+
+The expected value of the uniform distribution on interval is (1-0)/2=0.5
+Expanding E[(X1-2*X2+X3)^2] We can get 
+$E(X_1^2)+4E(X_2^2)+E(X_3^2)-4E(X_1X_2)+2E(X_1X_2)-4E(X_2X_3)$
+We can further calculate 
+$E(X_1^2)= \int_{0}^{1}x^2dx = 1/3$
+Since X1 X2, X3 are independent of each other
+$E(X1X2)=E(X1)*E(X2)=1/2*1/2$
+So, we can calculate the final result as 1/2
+
+4. X has pdf f(x)=e^−x, x>0. Y=e^(3x/4)
+Find E(Y)
+Using the lazy statistician theorem. We can easily calculate the E(Y)
+$$E(Y) = \int_{0}^{\infty}e^{-x}e^{3x/4}dx=-4\mathrm{e}^{-\frac{x}{4}}=4$$
+
+
+5. X is the outcome of rolling a fair die. Y = g(X) = 2X^2 + 1
+Find E(Y)
+
+$$\operatorname {E}[g(X)]=\sum _{x}g(x)f_{X}(x)=\sum _{x}(2x^2+1)*1/6=31.3$$
+```{r}
+y = 0
+for (i in 1:6) {
+  y= y+(2*i^2+1)*1/6
+}
+y
+```
+
+6. X has pdf
+f(x)=2(1−x), 0<x<1 
+Y =(2X+1)
+Find E(Y^2).
+
+Using rule of lazy statistician
+$$E(Y^2)=\int _{x}g(x)f_{X}(x)=\int _{x}(2*(1-x))(2x+1)(1x+1)dx=3$$
+
+
+7. Remember the binomial theorem: (x + y)n = 􏰂n Show that E[(ax + b)n] = 􏰂n 􏰀n􏰁an−ibiE(Xn−i)
+i=0 
+
+When we are interested in the expectation of a ramdom variable, we can take a constant out of the expectation. So
+$$E[(ax+b)^n]=\sum_{i=0}^{n}\binom{n}{i}(ax)^{n-i}b^i$$
+$$E[(ax+b)^n]=E[\sum_{i=0}^{n}\binom{n}{i}a^{n-i}b^ix^{n-i}]$$
+$$E[(ax+b)^n]=\sum_{i=0}^{n}\binom{n}{i}a^{n-i}b^ix^{n-i}E[x^{n-i}]$$
+
+8. The proportion of defective parts in a large shipment is p. A random sample of n parts is selected from the shipment. Let X denote the number of defective parts in the sample, and Y denote the number of good parts in the sample. Find E(X − Y ).
+If the sample size is 20 and p is 5%, what is E(X −Y)? Write out your answer as a complete sentence that expresses the meaning of your result.
+
+
+Since the defective parts comes from a large shipment. We will consider this as a binomial distribition.
+E(X-Y)=np-n(1-p)=2np-n
+
+The defective parts are expected to be 18 units less than good parts.
+
+

@@ -1,0 +1,103 @@
+---
+title: "hw_emperical"
+author: "LonghaoChen"
+date: "3/4/2019"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1. Is the data in the file maybe uniform.txt distributed as a Uniform distribution on [0, 1]?
+```{r}
+library(reshape2)
+library(tidyverse)
+library(fitdistrplus)
+library(car)
+maybe_uniform <- read.table("~/Desktop/MA677/HW/maybe_uniform.txt", quote="\"", comment.char="")
+maybe <- reshape2::melt(maybe_uniform)
+qqPlot(maybe$value,distribution = "unif")
+plotdist(maybe$value, demp = TRUE)
+descdist(maybe$value, obs.col = "red",boot=1000)
+
+```
+
+Yes, I believe it is close to uniform distribution.
+
+Is it possible that the model below is better than the Uniform?
+
+
+
+Is there a third model that is a better fit?
+Not really from our plot.
+
+2. Is the data in the file maybe normal.txt a random sample from the
+normal distribution with mean = 26 and variance = 4? Investigate
+your result. Make a qnorm plot. Make a histogram. Be ready to show
+and discuss your results.
+
+```{r}
+maybe_normal <- read.table("~/Desktop/MA677/HW/maybe_normal.txt", quote="\"", comment.char="")
+normal <- reshape2::melt(maybe_normal)
+qqPlot(normal$value,distribution = "unif")
+plotdist(normal$value, demp = TRUE)
+descdist(normal$value, obs.col = "red",boot=1000)
+fit <- fitdistr(normal$value, densfun="normal") 
+fit
+```
+
+I think it is close to a normal distribution with mean at 26 and variance at 4, since I have evidence from qqplot, histrogram and from fitdistr function.
+
+3. Are the two samples in X, maybe same 1.txt, and Y , maybe same 2.txt,
+from the same distribution? Could it be that X + 2 and Y have the
+same distribution?
+
+```{r}
+maybe_same1 <- read_table2("~/Desktop/MA677/HW/maybe_same_1.txt", 
+    col_names = FALSE, col_types = cols(X1 = col_number(), 
+        X2 = col_number(), X3 = col_number(), 
+        X4 = col_number(), X5 = col_number()))
+maybe_same2 <- read_table2("~/Desktop/MA677/HW/maybe_same_2.txt", 
+    col_names = FALSE, col_types = cols(X1 = col_number(), 
+        X2 = col_number(), X3 = col_number(), 
+        X4 = col_number(), X5 = col_number()))
+
+same1 <- reshape2::melt(maybe_same1,id.vars=NULL)
+same2 <- reshape2::melt(maybe_same2,id.vars=NULL)
+
+qqPlot(same1$value,distribution = "unif")
+plotdist(same1$value, demp = TRUE)
+descdist(same1$value, obs.col = "red",boot=1000)
+
+qqPlot(same2$value,distribution = "unif")
+plotdist(same2$value, demp = TRUE)
+descdist(same2$value, obs.col = "red",boot=1000)
+
+qqPlot(same2$value+2,distribution = "unif")
+plotdist(same2$value+2, demp = TRUE)
+descdist(same2$value+2, obs.col = "red",boot=1000)
+```
+By comparing the plots of X, Y and X+2, I think the the relationship is stronger between X and Y rather than X+2 and Y. Therefore, X and Y are more likely to come from the same distribution.
+
+4. Read the data in the file norm data.Rdata. There are 25 data points.
+Is this a data set drawn from the **standard normal distribution**
+Use ecdf() to compute the empirical distribution of the data. Create
+a normal distribution that can be used to calculate the KolmogorovSmirnov test. Calculate the D statistic. Run the ks.test() function
+and compare your results to the results reported by ks.test.
+
+```{r}
+mydata <- readRDS("~/Desktop/MA677/HW/norm_sample.Rdata")
+b <- ecdf(mydata)
+plot(b)
+a <- rnorm(n = 25,mean = 0,sd = 1)
+ks.test(x = mydata,y = a)
+```
+Our results indicate that the data is not standard normal distribution.
+
+5. Produce empirical distributions with confidence bands for the fujiquakes.dat and faithful.dat. For the fujiquakes data, Find a 95for
+F(4.9) − F(4.3). For the faithful data, estimate a 90 percent confidence interval for the mean waiting time and estimate the median
+waiting time.
+
